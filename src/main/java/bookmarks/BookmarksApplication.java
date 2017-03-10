@@ -17,16 +17,19 @@ public class BookmarksApplication {
 	@Bean
 	CommandLineRunner init(AccountRepository accountRepository,
 			BookmarkRepository bookmarkRepository) {
+		System.out.println("CommandLineRunner!!");
 		return (evt) -> Arrays.asList(
 				"jhoeller,dsyer,pwebb,ogierke,rwinch,mfisher,mpollack,jlong".split(","))
 				.forEach(
 						a -> {
 							Account account = accountRepository.save(new Account(a,
 									"password"));
-							bookmarkRepository.save(new Bookmark(account,
+							System.out.println("account:" + account.toString());
+							Bookmark bookmark1 = bookmarkRepository.save(new Bookmark(account,
 									"http://bookmark.com/1/" + a, "A description"));
-							bookmarkRepository.save(new Bookmark(account,
+							Bookmark bookmark2 = bookmarkRepository.save(new Bookmark(account,
 									"http://bookmark.com/2/" + a, "A description"));
+							System.out.println("account:" + bookmark1.toString());
 						});
 	}
 }

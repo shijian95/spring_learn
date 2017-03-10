@@ -1,9 +1,11 @@
 package bookmarks;
 
 import java.net.URI;
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,9 +29,12 @@ public class BookmarkRestController {
 	}
 	
 	@RequestMapping(method = RequestMethod.GET)
-	Collection<Bookmark> readBookmarks(@PathVariable String userId) {
+	Resources<BookmarkResource> readBookmarks(@PathVariable String userId) {
 		this.validateUser(userId);
-		return this.bookmarkRepository.findByAccountUsername(userId);
+		List<BookmarkResource> bookmarkResourceList = bookmarkRepository
+				.findByAccountUsername(userId).stream().map(BookmarkResource::new)
+				.collect(Collectors.toList());
+		return new Resources<>(bookmarkResourceList);
 	}
 
 	@RequestMapping(method = RequestMethod.POST)
@@ -53,9 +58,9 @@ public class BookmarkRestController {
 	}
 
 	@RequestMapping(method = RequestMethod.GET, value = "/{bookmarkId}")
-	Bookmark readBookmark(@PathVariable String userId, @PathVariable Long bookmarkId) {
+	BookmarkResource  readBookmark(@PathVariable String userId, @PathVariable Long bookmarkId) {
 		this.validateUser(userId);
-		return this.bookmarkRepository.findOne(bookmarkId);
+		return new BookmarkResource(bookmarkRepository.findOne(bookmarkId));
 	}
 
 	private void validateUser(String userId) {
